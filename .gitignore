@@ -1,1 +1,14 @@
 __pycache__/
+codex/add-tests-for-tetrisboard-and-sevenbag
+
+*.pyc
+*.pyo
+*.pyd
+# virtual environments
+venv/
+ENV/
+env/
+# training outputs
+models/
+runs/
+main
