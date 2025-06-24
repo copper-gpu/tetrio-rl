@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# virtual environments
+venv/
+ENV/
+env/
+# training outputs
+models/
+runs/
