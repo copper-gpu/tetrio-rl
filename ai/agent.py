@@ -20,8 +20,8 @@ class HeuristicAgent(BaseAgent):
 
     def evaluate_board(self, board):
         """Basic heuristics: lower total height and more cleared lines are better"""
-        heights = np.argmax(board[::-1], axis=0)
-        heights = np.where(heights == 0, board.shape[0], board.shape[0] - heights)
+        heights = board.shape[0] - np.argmax(board[::-1], axis=0)
+        heights[np.all(board == 0, axis=0)] = 0
         aggregate_height = np.sum(heights)
         holes = np.sum((board == 0) & (np.cumsum(board != 0, axis=0) > 0))
         bumpiness = np.sum(np.abs(np.diff(heights)))
