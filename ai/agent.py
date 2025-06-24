@@ -1,10 +1,18 @@
-# ai/agent.py
-# Defines the AI agent interface and a simple heuristic-based baseline
+"""Agent base classes and simple heuristics.
+
+This module defines :class:`BaseAgent`, the minimal interface for an AI agent,
+and :class:`HeuristicAgent`, a very small baseline that uses board heuristics to
+pick actions. Agents receive the board state and must choose a target column and
+rotation for the active piece.
+"""
 
 import numpy as np
 
 class BaseAgent:
-    def __init__(self):
+    """Abstract interface for Tetris agents."""
+
+    def __init__(self) -> None:
+        """Initialise the agent."""
         pass
 
     def choose_action(self, board_state, piece, piece_x, piece_y, piece_rotation):
@@ -15,7 +23,10 @@ class BaseAgent:
 
 
 class HeuristicAgent(BaseAgent):
-    def __init__(self):
+    """Simple agent using a handcrafted board evaluation function."""
+
+    def __init__(self) -> None:
+        """Initialise the heuristic agent."""
         super().__init__()
 
     def evaluate_board(self, board):
