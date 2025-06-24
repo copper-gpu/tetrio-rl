@@ -1,4 +1,3 @@
-# main.py
 """Command‑line interface for the TETR.IO AI Trainer.
 
 Usage
@@ -38,6 +37,8 @@ def _cmd_train(args: argparse.Namespace) -> None:  # noqa: D401
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _build_parser() -> argparse.ArgumentParser:  # noqa: D401
+    """Construct and return the program's argument parser."""
+
     parser = argparse.ArgumentParser(description="TETR.IO AI Trainer CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 

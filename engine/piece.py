@@ -1,12 +1,16 @@
-# Implements Tetris pieces and Super Rotation System (SRS)
+"""Definitions for individual Tetris pieces and rotation data."""
 
 import numpy as np
 
 class Piece:
-    def __init__(self, type_):
+    """Representation of a single Tetris piece."""
+
+    def __init__(self, type_: str) -> None:
+        """Store the piece type (e.g. ``'I'`` or ``'T'``)."""
         self.type = type_
 
-    def shape(self, rotation):
+    def shape(self, rotation: int):
+        """Return the piece's shape array at ``rotation``."""
         return PIECES[self.type][rotation % 4]
 
 # Tetrimino definitions (0–3: 0°, R, 180°, L)

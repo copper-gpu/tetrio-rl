@@ -1,21 +1,10 @@
-# Main structure of TETR.IO AI Trainer
+"""Tetris board implementation used for training agents.
 
-# --- File Structure ---
-# project/
-# ├── engine/              # Tetris game simulation
-# │   ├── core.py          # Board logic
-# │   └── piece.py         # Piece logic (Tetris SRS)
-# ├── ai/
-# │   ├── agent.py         # AI model interface
-# │   └── trainer.py       # RL training loop
-# ├── sessions/
-# │   ├── runner.py        # Launch and manage sessions
-# │   └── feedback.py      # Evaluation and logging
-# ├── models/             # Saved models & restore points
-# └── main.py              # CLI entry point
-
-# --- engine/core.py ---
-# Implements Tetris board state and operations (place, clear lines, game over)
+This module exposes :class:`TetrisBoard`, a lightweight simulation of the game
+board.  It provides piece spawning, movement, rotation with Super Rotation
+System (SRS) kicks, line clearing and basic game state queries.  The class is
+intentionally minimal and deterministic to keep training fast.
+"""
 
 import numpy as np
 from engine.piece import Piece, SRS_KICKS
@@ -24,7 +13,10 @@ BOARD_WIDTH = 10
 BOARD_HEIGHT = 20
 
 class TetrisBoard:
-    def __init__(self):
+    """Minimal Tetris board used during training."""
+
+    def __init__(self) -> None:
+        """Create an empty board and reset state."""
         self.board = np.zeros((BOARD_HEIGHT, BOARD_WIDTH), dtype=int)
         self.active_piece = None
         self.piece_x = 0
@@ -32,7 +24,8 @@ class TetrisBoard:
         self.piece_rotation = 0
         self.game_over = False
 
-    def spawn(self, piece: Piece):
+    def spawn(self, piece: Piece) -> None:
+        """Spawn ``piece`` at the default position."""
         self.active_piece = piece
         self.piece_x = 3
         self.piece_y = 0
@@ -40,7 +33,8 @@ class TetrisBoard:
         if self.check_collision(piece.shape(self.piece_rotation), self.piece_x, self.piece_y):
             self.game_over = True
 
-    def move(self, dx, dy):
+    def move(self, dx: int, dy: int) -> bool:
+        """Attempt to translate the active piece by ``(dx, dy)``."""
         if not self.active_piece:
             return False
         if not self.check_collision(self.active_piece.shape(self.piece_rotation), self.piece_x + dx, self.piece_y + dy):
@@ -49,9 +43,10 @@ class TetrisBoard:
             return True
         return False
 
-    def rotate(self, direction):
+    def rotate(self, direction: int) -> bool:
+        """Rotate the active piece, applying SRS kicks."""
         if not self.active_piece:
-            return
+            return False
         new_rotation = (self.piece_rotation + direction) % 4
         kicks = SRS_KICKS[self.active_piece.type][(self.piece_rotation, new_rotation)]
         for dx, dy in kicks:
@@ -62,12 +57,14 @@ class TetrisBoard:
                 return True
         return False
 
-    def hard_drop(self):
+    def hard_drop(self) -> None:
+        """Drop the piece until it lands and lock it."""
         while self.move(0, 1):
             pass
         self.lock_piece()
 
-    def lock_piece(self):
+    def lock_piece(self) -> None:
+        """Fix the current piece into the board and clear lines."""
         shape = self.active_piece.shape(self.piece_rotation)
         for y, row in enumerate(shape):
             for x, cell in enumerate(row):
@@ -76,13 +73,15 @@ class TetrisBoard:
         self.clear_lines()
         self.active_piece = None
 
-    def clear_lines(self):
+    def clear_lines(self) -> None:
+        """Remove any filled rows from the board."""
         new_board = self.board[~np.all(self.board == 1, axis=1)]
         lines_cleared = BOARD_HEIGHT - len(new_board)
         if lines_cleared > 0:
             self.board = np.vstack((np.zeros((lines_cleared, BOARD_WIDTH), dtype=int), new_board))
 
-    def check_collision(self, shape, x, y):
+    def check_collision(self, shape, x: int, y: int) -> bool:
+        """Return ``True`` if ``shape`` would collide at ``(x, y)``."""
         for i, row in enumerate(shape):
             for j, cell in enumerate(row):
                 if cell:
@@ -94,5 +93,6 @@ class TetrisBoard:
         return False
 
     def get_state(self):
+        """Return a tuple representing the current environment state."""
         return self.board.copy(), self.active_piece, self.piece_x, self.piece_y, self.piece_rotation
 
