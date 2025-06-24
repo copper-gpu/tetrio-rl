@@ -1,4 +1,6 @@
 __pycache__/
+codex/add-tests-for-tetrisboard-and-sevenbag
+
 *.pyc
 *.pyo
 *.pyd
@@ -9,3 +11,4 @@ env/
 # training outputs
 models/
 runs/
+main
